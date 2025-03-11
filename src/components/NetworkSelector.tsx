@@ -1,53 +1,34 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useNetwork } from "../config/NetworkContext"
-import { CHAINS } from "../config/network"
-import { ChevronDown } from 'lucide-react'
+import { useNetwork } from "../config/NetworkContext";
+import { CHAINS } from "../config/network";
+import { ChevronDown } from "lucide-react";
+import { useNetworkStatus } from "../hooks/useNetworkStatus";
 
 export function NetworkSelector() {
-  const { selectedChain, setSelectedChain } = useNetwork()
-  const [networkStatus, setNetworkStatus] = useState<"loading" | "success" | "error">("loading")
-
-  useEffect(() => {
-    const checkNetworkStatus = async () => {
-      setNetworkStatus("loading")
-      try {
-        const response = await fetch(selectedChain.rpc)
-        if (response.ok) {
-          setNetworkStatus("success")
-        } else {
-          setNetworkStatus("error")
-        }
-      } catch (error) {
-        console.error("Error checking network status:", error)
-        setNetworkStatus("error")
-      }
-    }
-
-    checkNetworkStatus()
-  }, [selectedChain])
+  const { selectedChain, setSelectedChain } = useNetwork();
+  const networkStatus = useNetworkStatus(selectedChain.rpc);
 
   const getNetworkSelectorClasses = () => {
     const baseClasses =
-      "appearance-none flex items-center gap-1 border rounded px-3 py-1.5 text-sm pr-8 bg-white transition-colors duration-300"
+      "appearance-none flex items-center gap-1 border rounded px-3 py-1.5 text-sm pr-8 bg-white transition-colors duration-300";
     switch (networkStatus) {
       case "success":
-        return `${baseClasses} border-bc-green-500 bg-bc-green-100`
+        return `${baseClasses} border-bc-green-500 bg-bc-green-100`;
       case "error":
-        return `${baseClasses} border-red-500 bg-red-100`
+        return `${baseClasses} border-red-500 bg-red-100`;
       default:
-        return `${baseClasses} border-grey-300`
+        return `${baseClasses} border-grey-300`;
     }
-  }
+  };
 
   return (
     <div className="relative">
       <select
         value={selectedChain.rpc}
         onChange={(e) => {
-          const newChain = CHAINS.find((c) => c.rpc === e.target.value)
-          if (newChain) setSelectedChain(newChain)
+          const newChain = CHAINS.find((c) => c.rpc === e.target.value);
+          if (newChain) setSelectedChain(newChain);
         }}
         className={getNetworkSelectorClasses()}
       >
@@ -67,5 +48,5 @@ export function NetworkSelector() {
         </div>
       )}
     </div>
-  )
+  );
 }
